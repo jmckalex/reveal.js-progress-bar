@@ -1,0 +1,180 @@
+/* The Beamer-style progress bar along the top edge, divided into the deck's
+   main sections: see js/progress-bar.js, which builds it.  Loaded by
+   reveal-template-top.php when a deck sets $show_progress_bar = true. */
+
+.build-progress {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 14px;
+	z-index: 20;
+	pointer-events: none;
+	background: rgba(139, 116, 61, 0.08);
+	border-bottom: 1px solid rgba(139, 116, 61, 0.25);
+}
+.build-progress .fill {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 0;
+	background: rgba(139, 116, 61, 0.22);
+	transition: width 400ms ease;
+}
+/* A thin solid line along the bottom of the filled part, so progress
+   reads at a glance even though the fill itself is pale. */
+.build-progress .fill::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -1px;
+	height: 2px;
+	background: var(--theme-brown);
+}
+.build-progress .segment {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	box-sizing: border-box;
+	padding: 0 4px;
+	border-left: 1px solid rgba(139, 116, 61, 0.35);
+	font-size: 9px;
+	line-height: 14px;
+	letter-spacing: 0.03em;
+	text-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: rgba(96, 78, 37, 0.45);
+	transition: color 400ms ease;
+}
+.build-progress .segment:first-child {
+	border-left: none;
+}
+.build-progress .segment.current {
+	color: rgba(96, 78, 37, 0.9);
+}
+/* A title too long for its segment is abbreviated with an ellipsis,
+   unless it is the current section, in which case it floats in full
+   over its neighbours. */
+.build-progress .segment.tight.current {
+	overflow: visible;
+	z-index: 1;
+}
+/* The floating title covers the bar, so it shows its own fill: how far
+   through this section we are (--section-progress, set by the script),
+   drawn the same way as the main fill. */
+@property --section-progress {
+	syntax: '<percentage>';
+	inherits: true;
+	initial-value: 0%;
+}
+/* The tag is exactly as tall as the bar plus its bottom border (15px),
+   and has no bottom border of its own: the baseline and the progress
+   line are background layers anchored to its bottom edge, so they sit
+   in the same pixel rows as the bar's border and the main fill's line. */
+.build-progress .segment.tight.current > span {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	box-sizing: border-box;
+	height: 15px;
+	padding: 0 6px;
+	background:
+		linear-gradient(to right, var(--theme-brown) var(--section-progress), transparent var(--section-progress))
+			bottom / 100% 2px no-repeat,
+		linear-gradient(rgba(139, 116, 61, 0.25), rgba(139, 116, 61, 0.25))
+			bottom / 100% 1px no-repeat,
+		linear-gradient(to right, rgba(139, 116, 61, 0.22) var(--section-progress), transparent var(--section-progress)),
+		var(--r-background-color, #f7f2e4);
+	border-left: 1px solid rgba(139, 116, 61, 0.35);
+	border-right: 1px solid rgba(139, 116, 61, 0.35);
+	transition: --section-progress 400ms ease;
+}
+/* A section given an icon (data-progress-icon) shows just the icon; its
+   name appears beside it only in the floating tag. */
+.build-progress .segment .segment-name {
+	display: none;
+}
+.build-progress .segment.tight.current .segment-name {
+	display: inline;
+	margin-left: 0.4em;
+}
+/* With clicking or thumbnails on, the bar takes the pointer. */
+.build-progress.interactive {
+	pointer-events: auto;
+	user-select: none;
+}
+.build-progress.clickable {
+	cursor: pointer;
+}
+/* While the pointer is over the bar, a tick marks the build a click
+   would go to, and a thumbnail of it hangs below the bar. */
+.build-progress .hover-mark {
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: -1px;
+	width: 2px;
+	margin-left: -1px;
+	z-index: 2;
+	background: var(--theme-brown);
+}
+.build-progress.hovering .hover-mark {
+	display: block;
+}
+/* The thumbnail is a miniature presentation: the class "reveal" gives
+   the copied slide the theme's styles.  It sits outside the real .reveal,
+   whose every ".slides section" reveal.js counts as a slide. */
+.reveal.build-progress-thumb {
+	position: fixed;
+	z-index: 30;
+	overflow: hidden;
+	pointer-events: none;
+	border: 1px solid rgba(139, 116, 61, 0.5);
+	border-radius: 3px;
+	box-shadow: 0 3px 12px rgba(60, 50, 25, 0.3);
+	opacity: 0;
+	transition: opacity 150ms ease;
+}
+.reveal.build-progress-thumb.shown {
+	opacity: 1;
+}
+.build-progress-thumb .thumb-background {
+	position: absolute;
+	inset: 0;
+}
+.reveal.build-progress-thumb .slides {
+	right: auto;
+	bottom: auto;
+	margin: 0;
+	transform-origin: 0 0;
+}
+.reveal.build-progress-thumb .slides section,
+.reveal.build-progress-thumb .slides .fragment {
+	transition: none;
+}
+/* Stands in for a copied video or iframe, so hovering loads nothing. */
+.build-progress-thumb .thumb-placeholder {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 100%;
+	vertical-align: middle;
+	background: rgba(139, 116, 61, 0.15);
+	color: rgba(96, 78, 37, 0.5);
+	font-size: 96px;
+}
+html.print-pdf .build-progress,
+html.print-pdf .build-progress-thumb,
+.reveal.overview .build-progress {
+	display: none;
+}
+/* In scroll view (phones, or ?view=scroll) the deck scrolls inside the
+   viewport, so the bar is pinned to the screen instead. */
+.reveal-scroll .build-progress {
+	position: fixed;
+}
