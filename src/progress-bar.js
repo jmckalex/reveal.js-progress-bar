@@ -4,6 +4,10 @@
 // when the deck sets $show_progress_bar = true before including it; the
 // deck's other $progress_bar_* variables arrive as the progressBar entry of
 // Reveal.initialize()'s config (see the options below, and the README).
+// Any other reveal.js 5 deck can load it, and the stylesheet, after
+// reveal.js and before calling Reveal.initialize(), pass the options as
+// progressBar in its config, and mark where each section begins with
+// data-progress-section (below), since it has no reveal-outline.js.
 //
 // Unlike reveal's own progress bar (which counts slides), this counts every
 // *build*: each slide contributes one step for its initial state plus one

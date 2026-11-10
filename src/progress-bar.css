@@ -1,6 +1,7 @@
 /* The Beamer-style progress bar along the top edge, divided into the deck's
    main sections: see js/progress-bar.js, which builds it.  Loaded by
-   reveal-template-top.php when a deck sets $show_progress_bar = true. */
+   reveal-template-top.php when a deck sets $show_progress_bar = true, or
+   by any reveal.js deck that links it (see the README). */
 
 .build-progress {
 	position: absolute;
@@ -31,7 +32,7 @@
 	right: 0;
 	bottom: -1px;
 	height: 2px;
-	background: var(--theme-brown);
+	background: var(--theme-brown, rgb(139, 116, 61));
 }
 .build-progress .segment {
 	position: absolute;
@@ -84,7 +85,7 @@
 	height: 15px;
 	padding: 0 6px;
 	background:
-		linear-gradient(to right, var(--theme-brown) var(--section-progress), transparent var(--section-progress))
+		linear-gradient(to right, var(--theme-brown, rgb(139, 116, 61)) var(--section-progress), transparent var(--section-progress))
 			bottom / 100% 2px no-repeat,
 		linear-gradient(rgba(139, 116, 61, 0.25), rgba(139, 116, 61, 0.25))
 			bottom / 100% 1px no-repeat,
@@ -121,7 +122,7 @@
 	width: 2px;
 	margin-left: -1px;
 	z-index: 2;
-	background: var(--theme-brown);
+	background: var(--theme-brown, rgb(139, 116, 61));
 }
 .build-progress.hovering .hover-mark {
 	display: block;
